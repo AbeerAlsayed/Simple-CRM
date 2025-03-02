@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('vat')->unique();
             $table->string('address');
-            $table->enum('status', ['active', 'inactive'])->default('inactive');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->enum('status', ['open', 'in_progress', 'completed'])->default('open');
+            $table->softDeletes();
             $table->timestamps();
         });
 
