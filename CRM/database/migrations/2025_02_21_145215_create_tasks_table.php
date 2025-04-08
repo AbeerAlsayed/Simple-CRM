@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('due_date');
+            $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-            $table->enum('status', ['pending', 'in_progress', 'done'])->default('pending');
+            $table->foreignId('parent_task_id')->nullable()->constrained('tasks')->onDelete('cascade'); // لدعم المهام الفرعية
             $table->softDeletes();
             $table->timestamps();
         });

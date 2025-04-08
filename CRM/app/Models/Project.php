@@ -2,34 +2,26 @@
 
 namespace App\Models;
 
+use App\Traits\HasFormattedDates;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes,HasFactory,HasFormattedDates;
 
-    public function getDateAttribute($value)
+    public $fillable = ['title', 'description', 'deadline', 'status', 'assigned_user_id', 'assigned_client_id'];
+
+    public function assignedUser()
     {
-        return Carbon::parse($value)->format('m/d/Y');
+        return $this->belongsTo(User::class, 'assigned_user_id');
     }
 
-
-    public $fillable=['title','description','deadline','user_id','client_id','status'];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at', // إذا كنت تستخدم SoftDeletes
-    ];
-
-    public function client(){
-        return $this->belongsTo(Client::class);
-    }
-
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function assignedClient()
+    {
+        return $this->belongsTo(Client::class, 'assigned_client_id');
     }
 
     public function tasks(){

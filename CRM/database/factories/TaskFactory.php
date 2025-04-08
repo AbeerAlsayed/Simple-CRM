@@ -9,27 +9,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TaskFactory extends Factory
 {
-    /**
-     * تعريف النموذج المرتبط بالفاكتوري.
-     *
-     * @var string
-     */
-    protected $model = Task::class;
 
-    /**
-     * تعريف القيم التي سيتم إنشاءها بواسطة الفاكتوري.
-     *
-     * @return array
-     */
-    public function definition()
+    public function definition(): array
     {
         return [
-            'title' => $this->faker->word, // توليد عنوان المهمة
-            'description' => $this->faker->sentence, // توليد وصف المهمة
-            'due_date' => $this->faker->dateTimeBetween('now', '+1 year'), // توليد تاريخ استحقاق عشوائي
-            'user_id' => User::factory(), // ربط المهمة بمستخدم باستخدام فاكتوري للمستخدم
-            'project_id' => Project::factory(), // ربط المهمة بمشروع باستخدام فاكتوري للمشروع
-            'status' => $this->faker->randomElement(['pending', 'completed', 'in_progress']), // حالة المهمة
+            'title' => fake()->sentence(3),
+            'description' => fake()->paragraph(),
+            'due_date' => fake()->dateTimeBetween('+1 week', '+1 month'),
+            'user_id' => User::factory(),
+            'project_id' => Project::factory(),
+            'status' => fake()->randomElement(['pending', 'in_progress', 'completed']),
+            'parent_task_id' => null, // لاحقًا نقدر نعمل مهام فرعية
         ];
     }
+
 }

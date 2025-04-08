@@ -2,25 +2,26 @@
 
 namespace App\Models;
 
+use App\Traits\HasFormattedDates;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasFactory, Notifiable, HasApiTokens, HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles,HasFormattedDates;
     use SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',
     ];
 
     protected $hidden = [
@@ -28,37 +29,30 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts()
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at', // إذا كنت تستخدم SoftDeletes
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
-    public function getDateAttribute($value)
-    {
-        return Carbon::parse($value)->format('m/d/Y');
-    }
+
 
     public function addImage($image)
     {
-        $this->addMedia($image)->toMediaCollection('images');
+        if (!$image instanceof \Illuminate\Http\UploadedFile) {
+            throw new \Exception("Invalid file upload.");
+        }
+
+        return $this->addMedia($image)->toMediaCollection('images');
     }
+
 
     public function getImageUrl()
     {
-        return $this->getFirstMediaUrl('images');
+        return $this->getFirstMediaUrl('images') ?? null; // إرجاع null إذا لم تكن هناك صورة
     }
 
-
-    public function clients()
+    public function registerMediaCollections(): void
     {
-        return $this->hasMany(Client::class);
+        $this->addMediaCollection('images')->singleFile();
     }
 
     public function tasks()

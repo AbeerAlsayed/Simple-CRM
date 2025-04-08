@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\API\RegisterController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -14,7 +14,6 @@ Route::controller(RegisterController::class)->group(function(){
 });
 
 Route::middleware('auth:sanctum')->group( function () {
-    Route::apiResource('users', UserController::class);
     Route::apiResource('clients', ClientController::class);
     Route::apiResource('projects',ProjectController::class);
     Route::apiResource('tasks',TaskController::class);
@@ -22,3 +21,4 @@ Route::middleware('auth:sanctum')->group( function () {
 //------------------------------------------------------------------------------
     Route::post('logout', [RegisterController::class,'logout']);
 });
+Route::apiResource('users', UserController::class);

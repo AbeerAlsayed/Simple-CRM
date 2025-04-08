@@ -16,14 +16,12 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('deadline');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
-            $table->enum('status', ['open', 'in_progress', 'completed'])->default('open');
+            $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
+            $table->foreignId('assigned_user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('assigned_client_id')->nullable()->constrained('clients')->onDelete('set null');
             $table->softDeletes();
             $table->timestamps();
         });
-
-
     }
 
     /**

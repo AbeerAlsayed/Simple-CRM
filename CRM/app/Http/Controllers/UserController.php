@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -21,15 +22,19 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'role' => $request->role,
         ]);
 
-        // إضافة الصورة إذا كانت موجودة باستخدام Media Library
         if ($request->hasFile('image')) {
-            $user->addImage($request->file('image'));
+            $image = $request->file('image');
+            if ($image->isValid()) {
+                $user->addImage($image);
+            } else {
+                return response()->json(['message' => 'Invalid image upload'], 400);
+            }
         }
 
-        return response()->json($user, 201);
+
+        return response()->json(new UserResource($user), 201);
     }
 
     // تحديث معلومات المستخدم
@@ -42,22 +47,28 @@ class UserController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user->update([
+        // تحديث بيانات المستخدم بدون تعيين القيم الفارغة
+        $user->update(array_filter([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password ? bcrypt($request->password) : $user->password,
-            'role' => $request->role,
-        ]);
+            'password' => $request->password ? bcrypt($request->password) : null,
+        ]));
 
-        // إذا كانت صورة جديدة، يتم حذف الصورة القديمة وتخزين الصورة الجديدة
+        // إذا كانت هناك صورة جديدة، استبدلها بالصورة القديمة
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            $user->clearMediaCollection('images');
-            // إضافة الصورة الجديدة
-            $user->addImage($request->file('image'));
+            try {
+                $image = $request->file('image');
+                if ($image->isValid()) {
+                    // حذف الصورة القديمة فقط بعد التأكد من صحة الصورة الجديدة
+                    $user->clearMediaCollection('images');
+                    $user->addImage($image);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Image upload failed: ' . $e->getMessage()], 400);
+            }
         }
 
-        return response()->json($user, 200);
+        return response()->json(new UserResource($user), 200);
     }
 
     // الحصول على تفاصيل المستخدم

@@ -16,7 +16,6 @@ class ClientSeeder extends Seeder
     public function run()
     { // إنشاء 10 عملاء مع مشاريع مرتبطة
         Client::factory(10)
-            ->withProjects(3) // لتوليد 3 مشاريع لكل عميل
             ->create();
     }
 }

@@ -15,32 +15,14 @@ class ClientFactory extends Factory
      */
     protected $model = Client::class;
 
-    /**
-     * تعريف القيم التي سيتم إنشاءها بواسطة الفاكتوري.
-     *
-     * @return array
-     */
-    public function definition()
+
+    public function definition(): array
     {
         return [
-            'name' => $this->faker->company, // توليد اسم شركة وهمي
-            'vat' => $this->faker->vat, // توليد رقم ضريبي وهمي
-            'address' => $this->faker->address, // توليد عنوان وهمي
+            'name' => fake()->company(),
+            'vat' => fake()->unique()->numerify('#######'),
+            'address' => fake()->address(),
         ];
     }
 
-    /**
-     * حالة لإنشاء عميل مع مشاريع.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    public function withProjects($count = 1)
-    {
-        return $this->afterCreating(function (Client $client) use ($count) {
-            // إنشاء مشاريع مرتبطة بالعميل
-            Project::factory()->count($count)->create([
-                'client_id' => $client->id,
-            ]);
-        });
-    }
 }
