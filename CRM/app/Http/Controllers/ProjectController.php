@@ -2,82 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    // عرض جميع المشاريع
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        // تحميل المشاريع مع بيانات العميل والمستخدم
-        $projects = Project::with(['client', 'user'])->get();
-        return response()->json($projects, 200);
+        $projects = Project::all();
+        return view('projects.index', compact('projects'));
     }
 
-    // عرض تفاصيل المشروع
-    public function show(Project $project)
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        // إرجاع تفاصيل المشروع مع العميل والمستخدم
-        return response()->json($project->load(['client', 'user']), 200);
+        return view('projects.create', [
+            'users' => User::all(),
+            'clients' => Client::all(),
+        ]);
     }
 
-    // إنشاء مشروع جديد
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        // التحقق من صحة المدخلات
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'deadline' => 'nullable|date',
-            'user_id' => 'required|exists:users,id',
-            'client_id' => 'required|exists:clients,id',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
-
-        // إنشاء المشروع الجديد
-        $project = Project::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'deadline' => $request->deadline,
-            'user_id' => $request->user_id,
-            'client_id' => $request->client_id,
-            'status' => $request->status,
-        ]);
-
-        return response()->json($project, 201);
+        //
     }
 
-    // تحديث المشروع
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Project $project)
     {
-        // التحقق من صحة المدخلات
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'deadline' => 'nullable|date',
-            'user_id' => 'required|exists:users,id',
-            'client_id' => 'required|exists:clients,id',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
-
-        // تحديث المشروع
-        $project->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'deadline' => $request->deadline,
-            'user_id' => $request->user_id,
-            'client_id' => $request->client_id,
-            'status' => $request->status,
-        ]);
-
-        return response()->json($project, 200);
+        //
     }
 
-
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Project $project)
     {
-        $project->delete();
-        return response()->json(null, 204);
+        //
     }
 }

@@ -13,13 +13,13 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->sentence(3),
-            'description' => fake()->paragraph(),
-            'due_date' => fake()->dateTimeBetween('+1 week', '+1 month'),
+            'title' => $this->faker->sentence(3),
+            'description' => $this->faker->paragraph(),
+            'due_date' => $this->faker->dateTimeBetween('now', '+6 months'),
+            'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed']),
             'user_id' => User::factory(),
             'project_id' => Project::factory(),
-            'status' => fake()->randomElement(['pending', 'in_progress', 'completed']),
-            'parent_task_id' => null, // لاحقًا نقدر نعمل مهام فرعية
+            'parent_task_id' => null,
         ];
     }
 

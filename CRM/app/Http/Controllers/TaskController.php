@@ -2,81 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    // عرض جميع المهام
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        // تحميل المهام مع بيانات المشروع والمستخدم
-        $tasks = Task::with(['project', 'user'])->get();
-        return response()->json($tasks, 200);
+        $tasks = Task::all();
+        return view('tasks.index', compact('tasks'));
     }
 
-    // عرض تفاصيل المهمة
-    public function show(Task $task)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        // إرجاع تفاصيل المهمة مع المشروع والمستخدم
-        return response()->json($task->load(['project', 'user']), 200);
+        return view('tasks.create', [
+            'users' => User::all(),
+            'projects' => Project::all(),
+            'tasks' => Task::all(),
+        ]);
     }
 
-    // إنشاء مهمة جديدة
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        // التحقق من صحة المدخلات
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'due_date' => 'nullable|date',
-            'user_id' => 'required|exists:users,id',
-            'project_id' => 'required|exists:projects,id',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
-
-        // إنشاء المهمة الجديدة
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'due_date' => $request->due_date,
-            'user_id' => $request->user_id,
-            'project_id' => $request->project_id,
-            'status' => $request->status,
-        ]);
-
-        return response()->json($task, 201);
+        //
     }
 
-    // تحديث المهمة
+    /**
+     * Display the specified resource.
+     */
+    public function show(Task $task)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Task $task)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Task $task)
     {
-        // التحقق من صحة المدخلات
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'due_date' => 'nullable|date',
-            'user_id' => 'required|exists:users,id',
-            'project_id' => 'required|exists:projects,id',
-            'status' => 'required|in:pending,in_progress,completed',
-        ]);
-
-        // تحديث المهمة
-        $task->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'due_date' => $request->due_date,
-            'user_id' => $request->user_id,
-            'project_id' => $request->project_id,
-            'status' => $request->status,
-        ]);
-
-        return response()->json($task, 200);
+        //
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Task $task)
     {
-        $task->delete();
-        return response()->json(null, 204);
+        //
     }
 }

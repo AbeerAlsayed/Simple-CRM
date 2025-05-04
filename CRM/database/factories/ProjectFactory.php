@@ -13,12 +13,12 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->catchPhrase(),
-            'description' => fake()->paragraph(),
-            'deadline' => fake()->dateTimeBetween('+1 week', '+2 months'),
-            'user_id' => User::factory(),
-            'client_id' => Client::factory(),
-            'status' => fake()->randomElement(['pending', 'in_progress', 'completed']),
+            'title' => $this->faker->sentence(3),
+            'description' => $this->faker->paragraph(),
+            'deadline' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed']),
+            'assigned_user_id' => User::factory(),
+            'assigned_client_id' => Client::factory(),
         ];
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+// database/seeders/RolePermissionSeeder.php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -10,21 +12,38 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // إنشاء صلاحيات
-        Permission::create(['name' => 'create']);
-        Permission::create(['name' => 'edit']);
-        Permission::create(['name' => 'delete']);
-        Permission::create(['name' => 'view']);
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // إنشاء أدوار
+        // Create permissions
+        $permissions = [
+            // Client permissions
+            'view clients', 'create clients', 'edit clients', 'delete clients',
+            // Project permissions
+            'view projects', 'create projects', 'edit projects', 'delete projects',
+            // Task permissions
+            'view tasks', 'create tasks', 'edit tasks', 'delete tasks',
+            // User permissions
+            'view users', 'create users', 'edit users', 'delete users',
+            // System permissions
+            'manage settings', 'manage roles',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        // Create roles
         $adminRole = Role::create(['name' => 'admin']);
         $userRole = Role::create(['name' => 'user']);
 
-        // ربط الأدوار بالصلاحيات
-        $adminRole->syncPermissions(Permission::all());
-        $adminRole->givePermissionTo(Permission::all()); // منح جميع الصلاحيات للمسؤول
+        // Assign all permissions to admin
+        $adminRole->givePermissionTo(Permission::all());
 
-
-        $userRole->givePermissionTo(['view', 'create']); // منح صلاحيات عرض وإنشاء للمستخدم العادي
+        // Assign basic permissions to user
+        $userRole->givePermissionTo([
+            'view clients', 'view projects', 'view tasks',
+            'create tasks', 'edit tasks', 'view users',
+        ]);
     }
 }
